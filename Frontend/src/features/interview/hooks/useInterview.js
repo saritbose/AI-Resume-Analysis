@@ -6,9 +6,11 @@ import {
   generateResumePdf,
 } from "../services/interview.api";
 import { InterviewContext } from "../interview.context";
+import { useParams } from "react-router";
 
 export const useInterview = () => {
   const context = useContext(InterviewContext);
+  const { interviewId } = useParams();
 
   if (!context) {
     throw new Error("useInterview must be used within an InterviewProvider");

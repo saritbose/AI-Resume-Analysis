@@ -2,7 +2,15 @@ const jwt = require("jsonwebtoken");
 const tokenBlacklistModel = require("../models/blacklist.model");
 
 async function authUser(req, res, next) {
-  const token = req.cookies.token;
+  console.log("========== AUTH DEBUG ==========");
+  console.log("req.cookies:", req.cookies);
+  console.log("req.headers.cookie:", req.headers.cookie);
+  console.log("req.headers.authorization:", req.headers.authorization);
+  console.log("===============================");
+
+  const token = req.cookies?.token;
+
+  console.log("token:", token);
   if (!token) {
     return res.status(401).json({
       message: "Token not provided.",

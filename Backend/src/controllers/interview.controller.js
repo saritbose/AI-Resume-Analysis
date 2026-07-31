@@ -21,7 +21,7 @@ async function generateInterViewReportController(req, res) {
     jobDescription,
   });
 
-  const InterviewReport = await interviewReportModel.create({
+  const interviewReport = await interviewReportModel.create({
     user: req.user.id,
     resume: resumeContent.text,
     selfDescription,
@@ -31,7 +31,7 @@ async function generateInterViewReportController(req, res) {
 
   res.status(201).json({
     message: "Interview report generated successfully",
-    InterviewReport,
+    interviewReport,
   });
 }
 
@@ -82,7 +82,7 @@ async function generateResumePdfController(req, res) {
   const interViewReport =
     await interviewReportModel.findById(interviewReportId);
 
-  if (!interviewReport) {
+  if (!interViewReport) {
     return res.status(404).json({
       message: "Interview report not found.",
     });
