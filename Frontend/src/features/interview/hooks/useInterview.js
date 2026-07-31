@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import {
   getAllInterviewReports,
   generateInterViewReport,
@@ -22,6 +22,7 @@ export const useInterview = () => {
     resumeFile,
   }) => {
     setLoading(true);
+    let response = null;
     try {
       const response = await generateInterViewReport({
         jobDescription,
@@ -34,10 +35,14 @@ export const useInterview = () => {
     } finally {
       setLoading(false);
     }
+
+    return response.interviewReport;
   };
 
   const getReportById = async (interviewId) => {
     setLoading(true);
+    let response = null;
+
     try {
       const response = await getInterviewReportById(interviewId);
       setReport(response.interviewReport);
@@ -46,10 +51,13 @@ export const useInterview = () => {
     } finally {
       setLoading(false);
     }
+    return response.interviewReport;
   };
 
   const getReports = async () => {
     setLoading(true);
+    let response = null;
+
     try {
       const response = await getAllInterviewReports();
       setReport(response.interviewReports);
@@ -58,7 +66,16 @@ export const useInterview = () => {
     } finally {
       setLoading(false);
     }
+    return response.interviewReport;
   };
+
+  useEffect(() => {
+    if (interviewId) {
+      getReportById(interviewId);
+    } else {
+      getReports();
+    }
+  }, [interviewId]);
 
   return {
     loading,
