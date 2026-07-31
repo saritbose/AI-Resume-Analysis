@@ -5,7 +5,9 @@ import { AuthProvider } from "./features/auth/auth.context.jsx";
 function App() {
   return (
     <AuthProvider>
-      <RouterProvider router={router} />
+      <InterviewProvider>
+        <RouterProvider router={router} />
+      </InterviewProvider>
     </AuthProvider>
   );
 }
