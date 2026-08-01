@@ -1,6 +1,6 @@
 const { GoogleGenAI } = require("@google/genai");
+const puppeteer = require("puppeteer");
 const { z } = require("zod");
-const { zodToJsonSchema } = require("zod-to-json-schema");
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GOOGLE_GENAI_API_KEY,
@@ -103,11 +103,11 @@ async function generateInterviewReport({
                         Job Description: ${jobDescription}`;
 
   const response = await ai.models.generateContent({
-    model: "gemini-3.6-flash",
+    model: "gemini-3-flash-preview",
     contents: prompt,
     config: {
       responseMimeType: "application/json",
-      responseSchema: zodToJsonSchema(interviewReportSchema),
+      responseJsonSchema: z.toJSONSchema(interviewReportSchema),
     },
   });
 
@@ -156,11 +156,11 @@ The content should be ATS friendly, i.e. it should be easily parsable by ATS sys
 The resume should not be so lengthy, it should ideally be 1-2 pages long when converted to PDF. Focus on quality rather than quantity and make sure to include all the relevant information that can increase the candidate's chances of getting an interview call for the given job description.`;
 
   const response = await ai.models.generateContent({
-    model: "gemini-3.6-flash",
+    model: "gemini-3-flash-preview",
     contents: prompt,
     config: {
       responseMimeType: "application/json",
-      responseSchema: zodToJsonSchema(resumePdfSchema),
+      responseJsonSchema: z.toJSONSchema(resumePdfSchema),
     },
   });
 

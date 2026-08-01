@@ -9,24 +9,35 @@ const interviewReportModel = require("../models/interviewReport.model");
  * @description Controller to generate interview report based on user self description, resume and job description
  */
 async function generateInterViewReportController(req, res) {
-  const resumeContent = await new pdfParse.PDFParse(
-    Uint8Array.from(req.file.buffer),
-  ).getText();
-
   const { selfDescription, jobDescription } = req.body;
+  let resume = "";
 
-  const interViewReportByAi = await generateInterViewReport({
-    resume: resumeContent.text,
+  if (req.file) {
+    const resumeContent = await new pdfParse.PDFParse(
+      Uint8Array.from(req.file.buffer),
+    ).getText();
+    resume = resumeContent.text;
+  }
+
+  if (!resume && !selfDescription) {
+    return res.status(400).json({
+      message: "Please provide a resume or self description.",
+    });
+  }
+
+  const interViewReportByAi = await generateInterviewReport({
+    resume,
     selfDescription,
     jobDescription,
   });
 
   const interviewReport = await interviewReportModel.create({
     user: req.user.id,
-    resume: resumeContent.text,
+    resume,
     selfDescription,
     jobDescription,
     ...interViewReportByAi,
+    title: interViewReportByAi.title || "Interview Plan",
   });
 
   res.status(201).json({
@@ -79,10 +90,12 @@ async function getAllInterviewReportsController(req, res) {
 async function generateResumePdfController(req, res) {
   const { interviewReportId } = req.params;
 
-  const interViewReport =
-    await interviewReportModel.findById(interviewReportId);
+  const interviewReport = await interviewReportModel.findOne({
+    _id: interviewReportId,
+    user: req.user.id,
+  });
 
-  if (!interViewReport) {
+  if (!interviewReport) {
     return res.status(404).json({
       message: "Interview report not found.",
     });
